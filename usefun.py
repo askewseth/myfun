@@ -56,6 +56,19 @@ def ls(show=True, dirs=None, filt=''):
     return d_path
 
 
+def cd(path, full=False):
+    """Replicates regular cd, if '/' not first char path is relative."""
+    if path[0] != '/' or full:
+        os.chdir(path)
+        return
+    elif path == '..':
+        cur_path = pwd().split('/')
+        os.chdir('/'.join(cur_path[:-1]))
+    else:
+        bpath = os.getcwd() + '/'
+        os.chdir(bpath + path)
+        return
+
 def rmpyc(ask=True, path=None):
     """Remove all .pyc files in path, path defaults to cwd."""
     if path is None:
@@ -70,7 +83,7 @@ def rmpyc(ask=True, path=None):
         print '\t', i, x
     # Make sure they want to delete the files if ask is true
     if ask:
-        ans = raw_input("Are you sure you want to delete these files? (Y/n): ")
+        ans = raw_input("Are you sure you want to delete these files? ([Y]/n): ")
         if 'n' in ans.lower():
             print 'Did not delete files'
             return
