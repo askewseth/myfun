@@ -75,7 +75,7 @@ def all_specs(path='/home/extra/Desktop/AllHAraw/fits/'):
     m.cd(path)
     m.pwd()
     print path
-    files = m.ls(False, filt='.fits')
+    files = m.ls(True, filt='.fits')
     ercounter = 0
     print 'There are {} files'.format(len(files))
     for f in files:
