@@ -10,29 +10,33 @@ def pwd(show=False):
         return None
     return d
 
-
-def ls(show=True, dirs=None, filt=''):
+def ls(ret=False, dirs=None, filt='', path=None, ext=None):
     """
     Get the files and directories in the current working dir.
 
     Params:
-        returns:
+        ret:
             -if False print's results and return's None
-            -if True returns results as list full paths
+            -if True returns results as list of full paths
                 --DEFAULT: False
         dirs:
             -if True only get's directories
             -if False get's everything but directories
             -if None get's everything
                 --DEFAULT: None
-        filter:
+        filt:
             -String- only shows results containing that string
                 --DEFAULT: ''
-
+        path:
+            -String- if given operates on given path not current paths
+                --DEFAULT:None
+        ext:
+            -String- if given only returns files with .ext
+                --DEFAULT:None
     If called as:
-        m.ls(False)
+        m.ls(True)
     interpreted as:
-        m.ls(show=False)
+        m.ls(ret=True)
 
     """
     bpath = ''.join([os.getcwd(), '/'])
@@ -47,18 +51,25 @@ def ls(show=True, dirs=None, filt=''):
         d_raw = os.listdir(os.getcwd())
     d_nodots = filter(lambda x: x[0] != '.', d_raw)  # remove hidden dirs
     d_filtered = [x for x in d_nodots if filt in x]    # filter if given
+    # filter for extention if given
+    if ext is not None:
+        if not ext.startswith('.'):
+            ext = '.' + ext
+        d_filtered = [x for x in d_filtered if x.endswith(ext)]
     d_nopath = sorted(d_filtered)  # final values of d w/o path, to show
     d_path = [bpath + x for x in d_nopath]
-    if show:
+    if not ret:
+        if len(d_nopath) == 0:
+            print 'There is nothing to show.'
         for i, x in enumerate(d_nopath):
             print i, x
         return None
     return d_path
 
 
-def cd(path, full=False):
+def cd(path):
     """Replicates regular cd, if '/' not first char path is relative."""
-    if path[0] != '/' or full:
+    if path[0] == '/':
         os.chdir(path)
         return
     elif path == '..':
