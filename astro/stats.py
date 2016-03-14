@@ -11,5 +11,5 @@ def filter_tolerance(wls, data, tol=2):
     fil1_wls = [x[0] for x in filt1plot]
     fil1_wlsnot = [x[0] for x in filt1plotnot]
     fil1_data = [x[1] for x in filt1plot]
-    fil1_datanot = [x[1] for x in filt1plotnot]
+    fil1_datanot = [x[1] for x in filt1plotnot]m
     return [fil1_wls, fil1_data], [fil1_wlsnot, fil1_datanot]
