@@ -19,7 +19,7 @@ def pload(filename):
     return ret
 
 
-def pshow(ret=False,path=None):
+def pshow(ret=False, path=None):
     if path is None:
         path = use.pwd()
     if ret:
