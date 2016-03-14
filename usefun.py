@@ -11,7 +11,7 @@ def pwd(show=False):
     return d
 
 
-def ls(show=True, dirs=None, filt=''):
+def ls(ret=False, dirs=None, filt='', path=None):
     """
     Get the files and directories in the current working dir.
 
@@ -35,21 +35,26 @@ def ls(show=True, dirs=None, filt=''):
         m.ls(show=False)
 
     """
-    bpath = ''.join([os.getcwd(), '/'])
+    if path is None:
+        path = os.getcwd()
+    if not path.endswith('/'):
+        bpath = ''.join([path, '/'])
+    else:
+        bpath = path
     if dirs is not None:
         if dirs:
             # 2nd el (list of dirs) of 1st el (tuple of dir info)
             # returned in a generator
-            d_raw = os.walk(os.getcwd()).next()[1]
+            d_raw = os.walk(path).next()[1]
         else:
-            d_raw = os.walk(os.getcwd()).next()[2]
+            d_raw = os.walk(path).next()[2]
     else:
-        d_raw = os.listdir(os.getcwd())
+        d_raw = os.listdir(path)
     d_nodots = filter(lambda x: x[0] != '.', d_raw)  # remove hidden dirs
     d_filtered = [x for x in d_nodots if filt in x]    # filter if given
     d_nopath = sorted(d_filtered)  # final values of d w/o path, to show
     d_path = [bpath + x for x in d_nopath]
-    if show:
+    if ret is False:
         for i, x in enumerate(d_nopath):
             print i, x
         return None

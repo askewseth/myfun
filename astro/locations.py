@@ -1,6 +1,7 @@
 """File containing useful functions for switching b/t computers."""
 import os
 
+
 def get_location():
     loc = 'UNKNOWN'
     usr = 'UNKNOWN'
@@ -18,3 +19,6 @@ def get_location():
             except:
                 pass
     return loc, usr
+
+# set the location and the user for the program
+loc, usr = get_location()
