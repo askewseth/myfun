@@ -13,7 +13,6 @@ def rspec(path=None, local=False):
     # Get path
     if path is None:
         path = m.shortpath('All')
-        print 'got new path'
     if local:
         path = '/home/extra/AstroFiles/fits/'
     fits = [x for x in os.listdir(path) if '.fits' in x]
