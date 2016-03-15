@@ -1,6 +1,6 @@
 """Some functions I tend to use a lot when programming."""
 import os
-
+import myfun as m
 
 def pwd(show=False):
     """Print the current path."""
@@ -39,16 +39,21 @@ def ls(ret=False, dirs=None, filt='', path=None, ext=None):
         m.ls(ret=True)
 
     """
-    bpath = ''.join([os.getcwd(), '/'])
+    if path is None:
+        path = m.pwd()
+    if not path.endswith('/'):
+        bpath = ''.join([os.getcwd(), '/'])
+    else:
+        bpath = path
     if dirs is not None:
         if dirs:
             # 2nd el (list of dirs) of 1st el (tuple of dir info)
             # returned in a generator
-            d_raw = os.walk(os.getcwd()).next()[1]
+            d_raw = os.walk(path).next()[1]
         else:
-            d_raw = os.walk(os.getcwd()).next()[2]
+            d_raw = os.walk(path).next()[2]
     else:
-        d_raw = os.listdir(os.getcwd())
+        d_raw = os.listdir(path)
     d_nodots = filter(lambda x: x[0] != '.', d_raw)  # remove hidden dirs
     d_filtered = [x for x in d_nodots if filt in x]    # filter if given
     # filter for extention if given
