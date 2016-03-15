@@ -41,8 +41,9 @@ def rspecs(num=1, path=None, local=False, filt=''):
         path = m.shortpath('All')
         print 'got new path'
     if local:
-        path = '/home/extra/AstroFiles/fits/'
-    fits = [x for x in os.listdir(path) if '.fits' in x]
+        path = m.shortpath('local')
+    fits = [x for x in m.ls(True, path=path) if '.fits' in x]
+    assert len(fits) != 0, "There were no fit's files in the path"
     fits = [x for x in fits if filt in x]
     fnames = [path + rand.choice(fits) for f in fits]
     rand.shuffle(fnames)
