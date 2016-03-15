@@ -26,7 +26,7 @@ loc, usr = get_location()
 
 path_shortcuts = {
     ('All', 'AllBess', 'AllHA', 'AllHAraw', 'BeSS'): {
-        'oort': '/home/oort/AllHA/',
+        'oort': '/home/oort/Downloads/AllHA/',
         'extra': '/home/extra/Desktop/AllHAraw/fits/',
         'seth': '/home/seth/AllHA/'
          },

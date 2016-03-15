@@ -8,7 +8,7 @@ sys.path.insert(0, '/home/' + loc.get_location()[1] + '/AstroML/')
 from Spectrum import spectrum
 
 
-def rspec(path=None, local=False):
+def rspec(path=None, local=False, filt=""):
     """Return a random spectra built from fits file in given path."""
     # Get path
     if path is None:
@@ -16,6 +16,7 @@ def rspec(path=None, local=False):
     if local:
         path = '/home/extra/AstroFiles/fits/'
     fits = [x for x in os.listdir(path) if '.fits' in x]
+    fits = [x for x in fits if filt in x.lower()]
     fname = path + rand.choice(fits)
     try:
         s = spectrum(fname)
@@ -33,7 +34,7 @@ def rspec(path=None, local=False):
     return path
 
 
-def rspecs(num=1, path=None, local=False):
+def rspecs(num=1, path=None, local=False, filt=''):
     """Allow for getting a list of multiple specs."""
     # Get path
     if path is None:
@@ -42,6 +43,7 @@ def rspecs(num=1, path=None, local=False):
     if local:
         path = '/home/extra/AstroFiles/fits/'
     fits = [x for x in os.listdir(path) if '.fits' in x]
+    fits = [x for x in fits if filt in x]
     fnames = [path + rand.choice(fits) for f in fits]
     rand.shuffle(fnames)
     specs = []
@@ -154,8 +156,8 @@ def all_objs_info(path=None):
     len_files = len(files)
     print 'There are {} files'.format(len_files)
     for i, f in enumerate(files):
-        print '\rFilenumber: {0}   \tPercentage Done: {1}'\
-                .format(i, float(i) / len_files),
+        print '\rFilenumber: {0} \tPercentage Done: {1} \tNum Errors: {2}'\
+                .format(i, float(i) / len_files * 100, ercounter),
         try:
             s = spectrum(f)
             specs[s.fname] = s.obj_name

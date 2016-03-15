@@ -1,6 +1,6 @@
 """Initalizer for astro app in usefulfunctions module."""
-from specops import *
 from locations import *
+from specops import *
 from stats import *
 import os
 
