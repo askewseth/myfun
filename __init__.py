@@ -7,7 +7,7 @@ from dirs import *
 from colorfun import *
 from picklefun import *
 from locations2 import *
-
+from oneliners import *
 from astro import *
 # restore original path
 os.chdir(path)
