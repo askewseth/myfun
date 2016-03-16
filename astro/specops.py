@@ -44,7 +44,7 @@ def rspecs(num=1, path=None, local=False, filt=''):
     fits = [x for x in m.ls(True, path=path) if '.fits' in x]
     fnames = [x for x in fits if filt in x]
     assert len(fits) != 0, "There were no fit's files in the path"
-    print len(fnames)
+    # print len(fnames)
     rand.shuffle(fnames)
     specs = []
     counter = 0
