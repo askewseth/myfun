@@ -39,13 +39,12 @@ def rspecs(num=1, path=None, local=False, filt=''):
     # Get path
     if path is None:
         path = m.shortpath('All')
-        print 'got new path'
     if local:
         path = m.shortpath('local')
     fits = [x for x in m.ls(True, path=path) if '.fits' in x]
+    fnames = [x for x in fits if filt in x]
     assert len(fits) != 0, "There were no fit's files in the path"
-    fits = [x for x in fits if filt in x]
-    fnames = [path + rand.choice(fits) for f in fits]
+    print len(fnames)
     rand.shuffle(fnames)
     specs = []
     counter = 0
@@ -53,10 +52,12 @@ def rspecs(num=1, path=None, local=False, filt=''):
         try:
             s = spectrum(fnames[counter])
             specs.append(s)
-        except:
+        except Exception as e:
+            # print e
             pass
         counter += 1
         if counter > len(fnames):
+            print 'Reached the end of available files'
             break
     return specs
 
@@ -83,24 +84,27 @@ def plot_rspecs(num=1, ret=False, path=None,
     return
 
 
-def all_specs(path=None):
+def all_specs(filt='', path=None, local=False, close=True):
     """Return all of the files in the path given as spectra."""
     # Get path
     if path is None:
         path = m.shortpath('All')
         print 'got new path'
+    if local:
+        path = m.shortpath('local')
     specs = []
     m.cd(path)
     m.pwd()
     print path
-    files = m.ls(True, filt='.fits')
+    files = m.ls(True, filt=filt, ext='.fits')
     ercounter = 0
     print 'There are {} files'.format(len(files))
     for f in files:
         try:
             s = spectrum(f)
             specs.append(s)
-            s.close()
+            if close:
+                s.close()
         except:
             ercounter += 1
     print 'There were {0} errors'.format(ercounter)

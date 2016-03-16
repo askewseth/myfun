@@ -6,6 +6,7 @@ from printers import *
 from dirs import *
 from colorfun import *
 from picklefun import *
+from locations2 import *
 
 from astro import *
 # restore original path

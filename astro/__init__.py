@@ -2,6 +2,7 @@
 from locations import *
 from specops import *
 from stats import *
+from statstest import *
 import os
 
 
