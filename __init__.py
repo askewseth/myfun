@@ -8,7 +8,7 @@ from colorfun import *
 from picklefun import *
 from locations2 import *
 from oneliners import *
-# from astro import *
+import astro
 
 
 # restore original path
