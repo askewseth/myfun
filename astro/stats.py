@@ -4,12 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def filter_tolerance(wls, data, tol=2, pas=False):
+def filter_tolerance(wls, data, tol=2, pas=False, filtfrom=None):
     sigma = np.std(data)
-    avg = np.average(data)
+    if filtfrom is None:
+        filtfrom = np.average(data)
     plotdata = zip(wls, data)
-    filt1plot = filter(lambda x: abs(avg-x[1]) < tol * sigma, plotdata)
-    filt1plotnot = filter(lambda x: abs(avg-x[1]) > tol * sigma, plotdata)
+    filt1plot = filter(lambda x: abs(filtfrom-x[1]) < tol * sigma, plotdata)
+    filt1plotnot = filter(lambda x: abs(filtfrom-x[1]) > tol * sigma, plotdata)
     fil1_wls = [x[0] for x in filt1plot]
     fil1_wlsnot = [x[0] for x in filt1plotnot]
     fil1_data = [x[1] for x in filt1plot]
@@ -17,6 +18,22 @@ def filter_tolerance(wls, data, tol=2, pas=False):
     if pas:
         return [fil1_wls, fil1_data]
     return [fil1_wls, fil1_data], [fil1_wlsnot, fil1_datanot]
+
+
+def filter_tolerance_fit(wls, data, fit, tol=2, pas=False):
+    sigma = np.std(data)
+    plotdata = zip(wls, data)
+    # assert None not in filtfrom
+    filt1plot = filter(lambda x: abs(fit(x[0])-x[1]) < tol * sigma, plotdata)
+    filt1plotnot = filter(lambda x: abs(fit(x[0])-x[1]) > tol * sigma, plotdata)
+    fil1_wls = [x[0] for x in filt1plot]
+    fil1_wlsnot = [x[0] for x in filt1plotnot]
+    fil1_data = [x[1] for x in filt1plot]
+    fil1_datanot = [x[1] for x in filt1plotnot]
+    if pas:
+        return [fil1_wls, fil1_data]
+    return [fil1_wls, fil1_data], [fil1_wlsnot, fil1_datanot]
+
 
 
 def filter_iter(wls, data, tol=2, its=2):
@@ -34,3 +51,14 @@ def filter_twice(wls, data, tol=2):
     pss, fll = filter_tolerance(wls, data, tol)
     pss_filt, fll_filt = filter_tolerance(pss[0], pss[1], tol)
     return pss_filt, fll_filt
+
+
+def calc_r_squared(fit, wls, data, filtfrom='avg'):
+    # R^2 = 1 - SSline/SStotal
+    wls, data = map(np.array, [wls, data])
+    ss_line_data = data - fit(data)
+    ss_line = sum(ss_line_data**2)
+    avg = np.average(data)
+    ss_tot = sum([(wl - avg)**2 for wl in wls])
+    r_squared = 1-(ss_line/ss_tot)
+    return r_squared
