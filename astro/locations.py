@@ -2,6 +2,27 @@
 import os
 
 
+
+
+def shortpath(shortcut=None):
+    """Return full path for given shortcut name."""
+    keys = path_shortcuts.keys()
+    if shortcut is None:
+        for tup in keys:
+            print '\t'.join(tup)
+        return None
+    short = ''.join(map(lambda x: x.lower(), shortcut.split()))
+    for tup in keys:
+        lowertup = map(lambda x: x.lower(), tup)
+        if short in lowertup:
+            return path_shortcuts[tup][usr]
+    print 'Shortcut not found.  Available shortcuts: '
+    for tup in keys:
+        print '\t'.join(tup)
+    return None
+
+
+
 def get_location():
     """Figure out which computer is currently being used, return loc, usr."""
     loc = 'UNKNOWN'
@@ -41,21 +62,3 @@ path_shortcuts = {
         'seth': '/home/seth/myfun/'
     }
 }
-
-
-def shortpath(shortcut=None):
-    """Return full path for given shortcut name."""
-    keys = path_shortcuts.keys()
-    if shortcut is None:
-        for tup in keys:
-            print '\t'.join(tup)
-        return None
-    short = ''.join(map(lambda x: x.lower(), shortcut.split()))
-    for tup in keys:
-        lowertup = map(lambda x: x.lower(), tup)
-        if short in lowertup:
-            return path_shortcuts[tup][usr]
-    print 'Shortcut not found.  Available shortcuts: '
-    for tup in keys:
-        print '\t'.join(tup)
-    return None
