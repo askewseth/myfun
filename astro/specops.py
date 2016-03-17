@@ -161,7 +161,7 @@ def all_objs_info(path=None):
     len_files = len(files)
     print 'There are {} files'.format(len_files)
     for i, f in enumerate(files):
-        print '\rFilenumber: {0} \tPercentage Done: {1} \tNum Errors: {2}'\
+        print '\rFilenumber: {0} \tPercentage Done: {1.4} \tNum Errors: {2}'\
                 .format(i, float(i) / len_files * 100, ercounter),
         try:
             s = spectrum(f)
