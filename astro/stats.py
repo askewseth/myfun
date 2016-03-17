@@ -3,6 +3,7 @@ import myfun as m
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def filter_tolerance(wls, data, tol=2, pas=False):
     sigma = np.std(data)
     avg = np.average(data)
@@ -27,7 +28,6 @@ def filter_iter(wls, data, tol=2, its=2):
         fails.extend(fl2)
         wls, data = ps2
     return wls, fails.extends(data)
-
 
 
 def filter_twice(wls, data, tol=2):
