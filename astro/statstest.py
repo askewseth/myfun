@@ -80,8 +80,23 @@ def normalize_data(wls, data, tol=2):
     # Fit all unflagged data same as before
     # Divie data passed by last fit, the continuum line
 
+def blank_HA(wls, data, hatol=2):
+    ha = 6562
+    nothafull = [[x, y] for x, y in zip(wls, data) if ha-hatol > x or x > ha+hatol]
+    hafull = [[x, y] for x, y in zip(wls, data) if ha-hatol < x < ha+hatol]
+    notha = zip(*nothafull)
+    ha = zip(*hafull)
+    return notha, ha
 
-def normalize_spec(wls, data, tol=2):
+def normalize_spec(wls, data, tol=2, removeha=True, hatol=2):
+    if removeha:
+        notha, ha = blank_HA(wls, data, hatol=hatol)
+        wls, data = notha
+        plt.plot(*notha)
+        plt.plot(*ha)
+        plt.title("POINTS REMOVED AROUND HA LAB LINE")
+        plt.show()
+        # passed_wls, passed_data = np.array()
     passed_wls, passed_data = np.array(wls), np.array(data)
     """Returns normalized data."""
     # Flag all data points greater than tol stddevs away from the average
@@ -90,51 +105,47 @@ def normalize_spec(wls, data, tol=2):
     # Fit all unflagged data with both a linear and a quadratic fit
     linear_fit = np.poly1d(np.polyfit(wls, data, 1))
     quadratic_fit = np.poly1d(np.polyfit(wls, data, 2))
-
+    cubic_fit = np.poly1d(np.polyfit(wls, data, 3))
     # Plot the data passed along with the two fit lines calculated
     plt.plot(wls, data, 'o', ms=1, color='black')
     plt.plot(fll[0], fll[1], '.r', ms=3)
     linear_plot, = plt.plot(wls, linear_fit(wls), '-b', label='linear')
     quadratic_plot, = plt.plot(wls, quadratic_fit(wls), '-r',
                                label='quadratic')
+    cubic_plot, = plt.plot(wls, cubic_fit(wls), '-y',
+                           label='cubic')
     plt.xlabel('Wavelength (Angstroms)')
     plt.ylabel('Intensity Values')
     plt.title('First filter, from average')
-    plt.legend([linear_plot, quadratic_plot],
-               ['Linear Fit', 'Quadratic Fit'],
+    plt.legend([linear_plot, quadratic_plot, cubic_plot],
+               ['Linear Fit', 'Quadratic Fit', 'Cubic Fit'],
                loc=0
                )
     plt.show()
+
     # Choose best fit from R^2 value
-    def calc_r_squared(fit, wls, data):
-        # R^2 = 1 - SSline/SStotal
-        wls, data = map(np.array, [wls, data])
-        ss_line_data = data - fit(data)
-        ss_line = sum([x**2 for x in ss_line_data])
-        avg = np.average(data)
-        ss_tot = sum([(wl - avg)**2 for wl in wls])
-        r_squared = 1-(ss_line/ss_tot)
-        return r_squared
-    def getmeasure(fit, xd, yd):
-        yMeasured = yd
-        yExpected = fit(xd)
-        return sum([(meas - expe)**2 for meas, expe in zip(yMeasured, yExpected)])
+    def calc_r_squared(fit, xdata, ydata):
+        ybar = np.average(ydata)
+        error_line = sum([float((y - fit(x))**2) for x, y in zip(xdata, ydata)])
+        error_y = sum([float((y - ybar)**2) for y in ydata])
+        return 1 - (error_line / error_y)
     r2_linear = calc_r_squared(linear_fit, wls, data)
     r2_quadratic = calc_r_squared(quadratic_fit, wls, data)
+    r2_cubic = calc_r_squared(cubic_fit, wls, data)
     print "R^2 Values:"
     print '\tLinear: {}'.format(r2_linear)
     print '\tQuadratic: {}'.format(r2_quadratic)
+    print '\tCubic: {}'.format(r2_cubic)
 
     # Choose best fit from measure values
-    if getmeasure(linear_fit, wls, data) > getmeasure(quadratic_fit, wls, data):
-        bestfit = linear_fit
-    else:
-        bestfit = quadratic_fit
-    print "Get Measures:"
-    print '\tLinear: {}'.format(getmeasure(linear_fit, wls, data))
-    print '\tQuadratic: {}'.format(getmeasure(quadratic_fit, wls, data))
+    fitvalues = {
+        calc_r_squared(linear_fit, wls, data): linear_fit,
+        calc_r_squared(quadratic_fit, wls, data): quadratic_fit,
+        calc_r_squared(cubic_fit, wls, data): cubic_fit
+    }
+    bestfit = fitvalues[max(fitvalues.keys())]
+
     # Flag all data points greater than tol stddevs away from the new average
-    # print 'assuming linear fit better'
     new_pss, new_fll = stats.filter_tolerance_fit(wls, data,
                                                   bestfit, tol=tol)
     wls, data = new_pss[0], new_pss[1]
@@ -164,21 +175,21 @@ def normalize_spec(wls, data, tol=2):
 
     r2_linear2 = calc_r_squared(linear_fit, wls, data)
     r2_quadratic2 = calc_r_squared(quadratic_fit, wls, data)
+    r2_cubic2 = calc_r_squared(cubic_fit, wls, data)
     print "R^2 Values:"
     print '\tLinear: {}'.format(r2_linear2)
     print '\tQuadratic: {}'.format(r2_quadratic2)
+    print '\tCubic: {}'.format(r2_cubic2)
 
     # Choose best fit from measure values
-    if getmeasure(linear_fit, wls, data) > getmeasure(quadratic_fit, wls, data):
-        bestfit = linear_fit
-    else:
-        bestfit = quadratic_fit
-    print "Get Measures:"
-    print '\tLinear: {}'.format(getmeasure(linear_fit, wls, data))
-    print '\tQuadratic: {}'.format(getmeasure(quadratic_fit, wls, data))
+    fitvalues = {
+        calc_r_squared(linear_fit, wls, data): linear_fit,
+        calc_r_squared(quadratic_fit, wls, data): quadratic_fit,
+        calc_r_squared(cubic_fit, wls, data): cubic_fit
+    }
+    bestfit = fitvalues[max(fitvalues.keys())]
 
     # Divide data passed by last fit, the continuum line
     normal_data = passed_data/bestfit(passed_wls)
     print 'normal length', len(normal_data)
     plt.plot(passed_wls, normal_data, '-', color='orange')
-    # return (r2_linear, r2_quadratic)

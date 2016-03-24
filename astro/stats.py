@@ -52,13 +52,8 @@ def filter_twice(wls, data, tol=2):
     pss_filt, fll_filt = filter_tolerance(pss[0], pss[1], tol)
     return pss_filt, fll_filt
 
-
-def calc_r_squared(fit, wls, data, filtfrom='avg'):
-    # R^2 = 1 - SSline/SStotal
-    wls, data = map(np.array, [wls, data])
-    ss_line_data = data - fit(data)
-    ss_line = sum(ss_line_data**2)
-    avg = np.average(data)
-    ss_tot = sum([(wl - avg)**2 for wl in wls])
-    r_squared = 1-(ss_line/ss_tot)
-    return r_squared
+def r_squared(fit, xdata, ydata):
+    ybar = np.average(ydata)
+    error_line = sum([float((y - fit(x))**2) for x, y in zip(xdata, ydata)])
+    error_y = sum([float((y - ybar)**2) for y in ydata])
+    return 1 - (error_line / error_y)
