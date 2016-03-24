@@ -14,7 +14,8 @@ def rspec(path=None, local=False, filt=""):
     if path is None:
         path = loc.shortpath('All')
     if local:
-        path = '/home/extra/AstroFiles/fits/'
+        # path = '/home/extra/AstroFiles/fits/'
+        path = loc.shortpath('local')
     fits = [x for x in os.listdir(path) if '.fits' in x]
     fits = [x for x in fits if filt in x.lower()]
     fname = path + rand.choice(fits)
@@ -23,12 +24,12 @@ def rspec(path=None, local=False, filt=""):
         return s
     except:
         fname = path + rand.choice(fits)
-        try:
-            s = spectrum(fname)
-            return s
-        except:
-            print "ERROR MAKING SPECTRUM"
-            return None
+        # try:
+        s = spectrum(fname)
+        return s
+    # except Exception as e:
+        print "ERROR MAKING SPECTRUM: ", e
+        return None
 
     print len(fits)
     return path
