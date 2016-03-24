@@ -115,16 +115,28 @@ def normalize_spec(wls, data, tol=2):
         ss_tot = sum([(wl - avg)**2 for wl in wls])
         r_squared = 1-(ss_line/ss_tot)
         return r_squared
+    def getmeasure(fit, xd, yd):
+        yMeasured = yd
+        yExpected = fit(xd)
+        return sum([(meas - expe)**2 for meas, expe in zip(yMeasured, yExpected)])
     r2_linear = calc_r_squared(linear_fit, wls, data)
     r2_quadratic = calc_r_squared(quadratic_fit, wls, data)
     print "R^2 Values:"
     print '\tLinear: {}'.format(r2_linear)
     print '\tQuadratic: {}'.format(r2_quadratic)
 
+    # Choose best fit from measure values
+    if getmeasure(linear_fit, wls, data) > getmeasure(quadratic_fit, wls, data):
+        bestfit = linear_fit
+    else:
+        bestfit = quadratic_fit
+    print "Get Measures:"
+    print '\tLinear: {}'.format(getmeasure(linear_fit, wls, data))
+    print '\tQuadratic: {}'.format(getmeasure(quadratic_fit, wls, data))
     # Flag all data points greater than tol stddevs away from the new average
-    print 'assuming linear fit better'
+    # print 'assuming linear fit better'
     new_pss, new_fll = stats.filter_tolerance_fit(wls, data,
-                                                  linear_fit, tol=tol)
+                                                  bestfit, tol=tol)
     wls, data = new_pss[0], new_pss[1]
     plt.plot(wls, data, 'o', ms=1, color='black')
     plt.plot(new_fll[0], new_fll[1], '.g', ms=2)
@@ -156,8 +168,17 @@ def normalize_spec(wls, data, tol=2):
     print '\tLinear: {}'.format(r2_linear2)
     print '\tQuadratic: {}'.format(r2_quadratic2)
 
-    # Divie data passed by last fit, the continuum line
-    normal_data = passed_data/linear_fit(passed_wls)
+    # Choose best fit from measure values
+    if getmeasure(linear_fit, wls, data) > getmeasure(quadratic_fit, wls, data):
+        bestfit = linear_fit
+    else:
+        bestfit = quadratic_fit
+    print "Get Measures:"
+    print '\tLinear: {}'.format(getmeasure(linear_fit, wls, data))
+    print '\tQuadratic: {}'.format(getmeasure(quadratic_fit, wls, data))
+
+    # Divide data passed by last fit, the continuum line
+    normal_data = passed_data/bestfit(passed_wls)
     print 'normal length', len(normal_data)
-    plt.plot(passed_wls, normal_data, '.', color='orange')
+    plt.plot(passed_wls, normal_data, '-', color='orange')
     # return (r2_linear, r2_quadratic)
