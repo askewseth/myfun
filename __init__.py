@@ -10,7 +10,7 @@ from locations2 import *
 from oneliners import *
 import sys
 sys.path.insert(0, path + 'astro/')
-import astro
+# import astro
 
 
 # restore original path
