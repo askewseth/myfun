@@ -108,3 +108,11 @@ def rmpyc(ask=True, path=None):
         os.remove(f)
         print 'removed ', f
     return
+
+
+def getdirs(path=None):
+    """Return all of the extensions in the current directory that are Directories themself."""
+    if path is None:
+        path = os.getcwd()
+    dirs = [x for x in os.listdir(path) if os.path.isdir(x)]
+    return dirs
