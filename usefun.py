@@ -116,3 +116,25 @@ def getdirs(path=None):
         path = os.getcwd()
     dirs = [x for x in os.listdir(path) if os.path.isdir(x)]
     return dirs
+
+
+def catch(func, *args, **kwargs):
+    """
+    Acts as pipe for try, except block in comprehensions.
+
+    Takes functon name as first argument and the functions
+    arguments as the rest of the arguments.
+
+    Returns function output if no Exception thrown, otherwise returns none
+    and prints exception along with arguments given.
+
+    ex.
+    spec_files = [catch(spectrum, filename) for filename in file_paths]
+    """
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        print "EXCEPTION:"
+        print '\t', e
+        print '\t', ','.join(args)
+        return
